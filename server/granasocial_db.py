@@ -51,6 +51,17 @@ from server.marca import URL_API as _URL_DA_MARCA   # fonte unica: server/marca.
 _API_URL = _URL_DA_MARCA
 _TIMEOUT_PADRAO = 60
 
+# CA embarcado (certifi). Passamos explicito no verify= para NAO herdar um
+# REQUESTS_CA_BUNDLE/CURL_CA_BUNDLE quebrado do ambiente da maquina (ver blindagem
+# no main.py). verify com caminho explicito NAO e sobrescrito pelas env vars.
+try:
+    import certifi as _certifi
+    _CA_BUNDLE = _certifi.where()
+    if not _CA_BUNDLE or not os.path.exists(_CA_BUNDLE):
+        _CA_BUNDLE = True
+except Exception:
+    _CA_BUNDLE = True
+
 # Mensagem genérica p/ QUALQUER falha de infraestrutura. NUNCA expõe
 # host/porta/URL/stack na interface — o detalhe fica só no log local.
 ERR_CONEXAO = ('Não foi possível conectar ao servidor agora. '
@@ -94,7 +105,7 @@ def _api(action: str, extra: Optional[Dict[str, Any]] = None,
     if extra:
         payload.update(extra)
     try:
-        resp = _requests.post(_API_URL, json=payload, headers=_headers(), timeout=timeout)
+        resp = _requests.post(_API_URL, json=payload, headers=_headers(), timeout=timeout, verify=_CA_BUNDLE)
         try:
             data = resp.json()
         except Exception:

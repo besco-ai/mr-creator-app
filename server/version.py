@@ -12,11 +12,11 @@ atualizador cai no fallback '1.0' (era o bug que quebrava a checagem de versao).
 # FONTE UNICA de marca/endereco: server/marca.py
 from server import marca as _marca
 
-APP_VERSION = '2.7.3'
+APP_VERSION = '2.7.4'
 APP_NAME = _marca.MARCA
 APP_NOME = _marca.MARCA_CURTA
 EDITION = _marca.EDICAO
-BUILD_DATE = '2026-10-22'
+BUILD_DATE = '2026-10-23'
 AUTHOR = _marca.AUTOR
 
 # Manifest publico consultado pelo atualizador (CDN da infra nova).

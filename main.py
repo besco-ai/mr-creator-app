@@ -13,6 +13,27 @@ import logging
 import os
 import sys
 
+# BLINDAGEM DE CERTIFICADO SSL (2026-10-23): algumas maquinas tem
+# REQUESTS_CA_BUNDLE / CURL_CA_BUNDLE / SSL_CERT_FILE sobrando de um proxy de
+# inspecao HTTPS (mitmproxy, Fiddler, antivirus) apontando para um .pem que nao
+# existe mais (ex.: C:\docs\mitmconf\mitmproxy-ca-cert.pem). O requests OBEDECE
+# essa variavel e falha em TODO HTTPS com "Could not find a suitable TLS CA
+# certificate bundle" -> a GUI so mostra "nao foi possivel conectar ao servidor"
+# e NUNCA loga. Forcamos o certifi embarcado e ignoramos essas variaveis, pra
+# conectar em QUALQUER maquina independente do que sobrou no ambiente dela.
+try:
+    import certifi as _certifi
+    _ca = _certifi.where()
+    if _ca and os.path.exists(_ca):
+        os.environ['REQUESTS_CA_BUNDLE'] = _ca
+        os.environ['SSL_CERT_FILE'] = _ca
+        os.environ.pop('CURL_CA_BUNDLE', None)
+    else:
+        raise RuntimeError('certifi sem cacert.pem')
+except Exception:
+    for _v in ('REQUESTS_CA_BUNDLE', 'CURL_CA_BUNDLE', 'SSL_CERT_FILE'):
+        os.environ.pop(_v, None)
+
 # BLINDAGEM DE ENCODING (2026-07-13): no app CONGELADO (PyInstaller/Windows) o stdout/
 # stderr costuma ser cp1252 → print() de EMOJI (ex.: 🔄) levantava UnicodeEncodeError
 # 'charmap' e derrubava threads inteiras (todos os perfis viravam "Erro fatal"). Força
