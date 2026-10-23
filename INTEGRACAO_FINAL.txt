@@ -1,0 +1,19 @@
+GS BM CREATOR PRO MAX - v27.0 Enterprise Shield Edition
+---------------------------------------------------------
+Integração concluída com sucesso.
+
+MELHORIAS APLICADAS:
+1. CORE v27.0: Refatorado server/acesso.py para integração atômica com a nova API VPS.
+2. BLINDAGEM ABSOLUTA: Implementada lógica de subdomínios blindados em domínios raízes externos (ex: onixaix.com).
+3. MOTOR STEALTH: Injeção de headers polimórficos e randomização de hardware estável via GS_Stealth_Engine.
+4. PERFORMANCE: Otimização de timeouts e tratamento de erros para criação ilimitada sem travamentos.
+5. RESILIÊNCIA: Lógica de espera infinita por abastecimento de domínios na VPS integrada ao fluxo.
+6. COMPATIBILIDADE: Versão preparada para Windows 10/11 com runtime netfx garantido.
+
+ARQUIVOS ATUALIZADOS:
+- server/acesso.py (Refatorado)
+- server/version.py (Atualizado para v27.0)
+- main.py (Validado)
+- server/backend.py (Mapeado e Compatível)
+
+O software está pronto para produção massiva e blindagem total.

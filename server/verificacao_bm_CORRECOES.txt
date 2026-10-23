@@ -1,0 +1,57 @@
+CORREÇÕES IMPLEMENTADAS NO ARQUIVO: server/verificacao_bm.py
+===========================================================
+
+ARQUIVO: server/verificacao_bm.py
+FUNÇÃO: _preencher_detalhes_empresa (linha 1757)
+
+MUDANÇA: Validar ENDEREÇO COMPLETO antes de preencher
+
+LOCALIZAÇÃO: Após linha 1806 (após formatar logradouro/bairro)
+
+ADICIONAR:
+----------
+
+    # ===== VALIDAÇÃO: Garantir que ENDEREÇO é REAL e COMPLETO =====
+    logradouro = (logradouro or '').strip()
+    bairro = (bairro or '').strip()
+    municipio = (cidade or '').strip()
+    cep_limpo = re.sub(r'[^\d]', '', cep or '')
+    
+    tem_logradouro = bool(logradouro)
+    tem_bairro_cidade_cep = bool(bairro) and bool(municipio) and bool(cep_limpo)
+    
+    if not (tem_logradouro or tem_bairro_cidade_cep):
+        # Endereço incompleto — ABORTAR
+        logger.critical("[Verificação] ENDEREÇO INCOMPLETO — Abortando. "
+                       "CNPJ=%s, Razão Social=%s", cnpj, razao)
+        if callback_status:
+            callback_status("❌ Endereço incompleto — pulando para próximo CNPJ.")
+        return {'sucesso': False, 'mensagem': 'Endereço incompleto. Pulando para próximo CNPJ.'}
+    
+    logger.info("[Verificação] Endereço COMPLETO validado: logradouro=%s, bairro=%s, cidade=%s, cep=%s",
+                logradouro[:30] if logradouro else '(vazio)', 
+                bairro[:30] if bairro else '(vazio)',
+                municipio[:30] if municipio else '(vazio)',
+                cep_limpo)
+
+ADICIONAR ANTES DE PREENCHER CAMPOS (após linha 1870):
+------------------------------------------------------
+
+    # ===== LOG DE AUDITORIA: Registrar dados que serão preenchidos =====
+    logger.info("[Verificação] AUDITORIA - Dados REAIS a preencher no BM:")
+    logger.info("  - Razão Social: %s", razao)
+    logger.info("  - Endereço: %s, %s", endereco, numero if numero else '(sem número)')
+    logger.info("  - Bairro: %s", bairro)
+    logger.info("  - Cidade: %s", municipio)
+    logger.info("  - Estado: %s", estado)
+    logger.info("  - CEP: %s", cep)
+    logger.info("  - Telefone: %s (gerado - será alterado depois)", telefone[:20] if telefone else '')
+    logger.info("  - Site: %s", url_site)
+    logger.info("  - CNPJ: %s", cnpj_formatado)
+
+IMPACTO:
+--------
+✅ Validação rigorosa de endereço completo
+✅ Se endereço incompleto, aborta (estorna token)
+✅ Logs rastreiam todos os dados reais usados
+✅ Nenhuma BM é criada com endereço fake/incompleto

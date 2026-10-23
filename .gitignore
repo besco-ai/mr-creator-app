@@ -1,0 +1,54 @@
+# ── Ambiente e build ────────────────────────────────────────────────────────
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+build/
+dist/
+release/
+_PORTATIL/
+
+# ── Artefatos e binarios ────────────────────────────────────────────────────
+*.exe
+*.zip
+*.7z
+*.apk
+*.dll
+*.pyd
+*.msi
+*.pdf
+
+# ── Segredos e estado local (NUNCA commitar) ────────────────────────────────
+.env
+.env.*
+config/
+*.senha
+*.senha.txt
+senha.txt
+usuario.txt
+lembrar_acesso.txt
+captcha_token.txt
+*.token*
+hl_session_full.json*
+conta_fb_*.txt
+ips_4g_usados.*
+credenciais*.txt
+*.credentials
+*_vps.txt
+
+# ── Dados gerados em runtime / backups ──────────────────────────────────────
+logs/
+*.log
+*.bak
+*.bak_*
+_backup_*/
+personalidades/
+contas_criadas/
+
+# ── Ferramentas do editor ───────────────────────────────────────────────────
+.claude/
+.idea/
+.vscode/
+# gerado no build (define a marca para o Inno)
+instalador/_marca.iss
+update_server/latest.json

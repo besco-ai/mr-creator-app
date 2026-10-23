@@ -1,0 +1,70 @@
+CORREÇÕES IMPLEMENTADAS NO ARQUIVO: server/acesso.py
+===================================================
+
+ARQUIVO: server/acesso.py
+FUNÇÕES: buscar_empresas_ativas (linha 608) e criar_site_empresa (linha 653)
+
+MUDANÇA 1: Filtrar empresas com ENDEREÇO COMPLETO
+MUDANÇA 2: Validar dados retornados
+
+FUNÇÃO: buscar_empresas_ativas
+LOCALIZAÇÃO: Linha 608
+
+ADICIONAR APÓS RETORNAR EMPRESAS:
+---------------------------------
+
+    # ... código existente ...
+    if empresas:
+        # NOVO: Filtrar apenas empresas com ENDEREÇO COMPLETO
+        empresas_reais = []
+        for emp in empresas:
+            tem_logradouro = bool(emp.get('logradouro', '').strip())
+            tem_bairro_cidade_cep = (
+                bool(emp.get('bairro', '').strip()) and
+                bool(emp.get('municipio', '').strip()) and
+                bool(emp.get('cep', '').strip())
+            )
+            if tem_logradouro or tem_bairro_cidade_cep:
+                empresas_reais.append(emp)
+        
+        if empresas_reais:
+            return {'sucesso': True, 'empresas': empresas_reais,
+                    'mensagem': f'{len(empresas_reais)} empresa(s) com endereço completo'}
+        else:
+            return {'sucesso': False, 'empresas': [], 'estoque_vazio': True,
+                    'mensagem': 'Sem empresas com endereço completo no estoque'}
+
+FUNÇÃO: criar_site_empresa
+LOCALIZAÇÃO: Linha 653
+
+ADICIONAR APÓS RETORNAR RES:
+----------------------------
+
+def criar_site_empresa(cnpj: str) -> dict:
+    """Cria site empresarial via API (consome 1 token).
+    NOVO: Valida que os dados retornados incluem endereço COMPLETO."""
+    res = _api_post('criar_site', {'cnpj': cnpj}, timeout=120)
+    
+    # NOVO: Validar que o endereço retornado é COMPLETO
+    if res.get('sucesso'):
+        empresa = res.get('empresa', {})
+        tem_logradouro = bool(empresa.get('logradouro', '').strip())
+        tem_bairro_cidade_cep = (
+            bool(empresa.get('bairro', '').strip()) and
+            bool(empresa.get('municipio', '').strip()) and
+            bool(empresa.get('cep', '').strip())
+        )
+        
+        if not (tem_logradouro or tem_bairro_cidade_cep):
+            # Endereço incompleto — sinalizar para o bot
+            res['endereco_incompleto'] = True
+            logger.warning('[Acesso] criar_site retornou endereço incompleto (CNPJ %s)', cnpj)
+    
+    return res
+
+IMPACTO:
+--------
+✅ Apenas empresas com ENDEREÇO COMPLETO são retornadas
+✅ Se endereço incompleto, não é retornado
+✅ Se endereço incompleto, o bot é notificado
+✅ Nenhum CNPJ fake ou incompleto é usado

@@ -1,0 +1,106 @@
+name: Build MR Farm Setup
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'server/**'
+      - 'client/**'
+      - 'main.py'
+      - 'FB_Profile_Manager.spec'
+      - 'requirements.txt'
+      - 'instalador/**'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python 3.10 x64
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          architecture: 'x64'
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~\AppData\Local\pip\Cache
+          key: pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Install dependencies
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+        run: |
+          python -m venv .venv
+          .\.venv\Scripts\python.exe -m pip install --upgrade pip setuptools wheel
+          .\.venv\Scripts\python.exe -m pip install -r requirements.txt pyinstaller
+        shell: pwsh
+
+      - name: Build exe (PyInstaller)
+        run: |
+          $slug = & .\.venv\Scripts\python.exe -c "from server.marca import MARCA_SLUG; print(MARCA_SLUG)"
+          echo "SLUG=$slug" >> $env:GITHUB_ENV
+          .\.venv\Scripts\python.exe -m PyInstaller --noconfirm --clean --distpath dist --workpath build\pyinstaller_x64 FB_Profile_Manager.spec
+          # Copy launcher files
+          if (Test-Path "instalador\launcher\INICIAR_APP.bat") {
+            Copy-Item "instalador\launcher\INICIAR_APP.bat" "dist\$slug\" -Force
+          }
+          if (Test-Path "instalador\launcher\primeira_execucao.ps1") {
+            Copy-Item "instalador\launcher\primeira_execucao.ps1" "dist\$slug\" -Force
+          }
+          # Move to release
+          New-Item -ItemType Directory -Force "release\app\x64" | Out-Null
+          robocopy "dist\$slug" "release\app\x64\$slug" /MIR /NFL /NDL /NJH /NJS
+          if ($LASTEXITCODE -ge 8) { exit 1 } else { $LASTEXITCODE = 0 }
+        shell: pwsh
+
+      - name: Download redistributables
+        run: |
+          New-Item -ItemType Directory -Force "instalador\redist" | Out-Null
+          Write-Host "Downloading .NET Framework 4.8..."
+          Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/?LinkId=2085155" -OutFile "instalador\redist\NDP48-x86-x64-AllOS-ENU.exe" -UseBasicParsing
+          Write-Host "Downloading WebView2 Runtime..."
+          Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/p/?LinkId=2124703" -OutFile "instalador\redist\MicrosoftEdgeWebView2Setup.exe" -UseBasicParsing
+          Write-Host "Downloading VC++ Redistributable x64..."
+          Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/vc_redist.x64.exe" -OutFile "instalador\redist\VC_redist.x64.exe" -UseBasicParsing
+          Get-ChildItem "instalador\redist" | ForEach-Object { Write-Host ("  " + $_.Name + " (" + [math]::Round($_.Length/1MB,1) + " MB)") }
+        shell: pwsh
+
+      - name: Install Inno Setup 6
+        run: choco install innosetup --yes --no-progress
+        shell: cmd
+
+      - name: Build installer (Inno Setup)
+        run: |
+          cd instalador
+          ..\.venv\Scripts\python.exe gerar_marca_iss.py
+          $iscc = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+          & $iscc setup_x64.iss
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          $setup = Get-Item "..\release\setup\$($env:SLUG)_Setup_x64.exe"
+          Write-Host ("Setup gerado: " + $setup.Name + " (" + [math]::Round($setup.Length/1MB,1) + " MB)")
+        shell: pwsh
+
+      - name: Read version
+        id: version
+        run: |
+          $ver = & .\.venv\Scripts\python.exe -c "from server.version import APP_VERSION; print(APP_VERSION)"
+          echo "VERSION=$ver" >> $env:GITHUB_OUTPUT
+        shell: pwsh
+
+      - name: Upload Setup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MR_Farm_Setup_v${{ steps.version.outputs.VERSION }}
+          path: release/setup/${{ env.SLUG }}_Setup_x64.exe
+          retention-days: 30
+
+      - name: Upload portable (zip) artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MR_Farm_Portable_v${{ steps.version.outputs.VERSION }}
+          path: release/app/x64/${{ env.SLUG }}/
+          retention-days: 30

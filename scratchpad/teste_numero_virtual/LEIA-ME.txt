@@ -1,0 +1,11 @@
+﻿Harness do fix da tela de NUMERO VIRTUAL do OAuth (2026-08-28).
+
+Roda o JS REAL (extraido do .py, nao uma copia) contra DOMs jsdom que reproduzem
+os prints do dono: tela de numero fechada, dropdown aberto com a armadilha do
+wrapper, tela ja selecionada, layout antigo terminal e o seletor de conta.
+
+  npm install jsdom
+  python extrair_js.py "..\..\server\etapa_full_datacrazy.py" js.js
+  node teste_virtual.js js.js
+
+Esperado: 16 passaram, 0 falharam (nos 3 modulos).

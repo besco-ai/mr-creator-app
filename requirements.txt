@@ -1,0 +1,18 @@
+requests
+playwright>=1.52.0
+pyotp
+mysql-connector-python
+# Interop nativo (pywebview -> pythonnet -> .NET WinForms). Versoes FIXAS de
+# proposito: o build empacotado e sensivel a elas (ver erro "Failed to resolve
+# Python.Runtime.Loader.Initialize"). NAO suba sem antes testar o .exe gerado
+# numa maquina Windows LIMPA.
+pywebview==6.2.1
+pythonnet==3.1.0
+clr-loader==0.3.1
+cffi
+certifi
+pyautogui
+pillow
+numpy
+sshtunnel
+paramiko<3.0

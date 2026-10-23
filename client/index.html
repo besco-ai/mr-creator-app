@@ -1,0 +1,646 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{MARCA}}</title>
+    <link rel="stylesheet" type="text/css" href="./css/index.css">
+</head>
+<body class="theme-v5">
+    <!-- Efeitos decorativos -->
+    <div class="glow-1"></div>
+    <div class="glow-2"></div>
+    <div class="glow-3"></div>
+
+    <!-- Brilho de borda (pisca verde=sucesso / vermelho=erro a cada etapa) -->
+    <div class="border-glow" id="border_glow"></div>
+
+    <!-- Mensagens -->
+    <div id="mensagem_sucesso"></div>
+    <div id="mensagem_erro"></div>
+
+    <!-- Tela de Login -->
+    <div id="tela_login" class="overlay-login">
+        <div class="login-box">
+            <div class="login-header">
+                <div class="login-logo-icon">
+                    <img src="images/logo.png" alt="{{MARCA}}">
+                </div>
+                <h2>{{MARCA}}</h2>
+                <p>Insira suas credenciais para continuar</p>
+            </div>
+            <div class="login-body">
+                <div class="login-item">
+                    <label>Usuário</label>
+                    <input type="text" id="login_usuario" placeholder="Seu usuário" autocomplete="username">
+                </div>
+                <div class="login-item">
+                    <label>Senha</label>
+                    <input type="password" id="login_senha" placeholder="Sua senha" autocomplete="current-password">
+                </div>
+                <div class="login-options">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="lembrar_acesso" checked>
+                        <span class="checkmark"></span>
+                        Lembrar meu acesso
+                    </label>
+                </div>
+                <button class="btn btn-primary btn-block" id="btn_login">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                        <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/>
+                    </svg>
+                    Entrar no Sistema
+                </button>
+            </div>
+            <div class="login-footer">
+                <p id="login_status"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cabeçalho -->
+    <div class="cabeca">
+        <div class="logo">
+            <div class="logo-icon">
+                <img src="images/logo.png" alt="{{MARCA}}">
+            </div>
+            <span class="titulo">{{MARCA}}</span>
+            <span class="versao">v5.0</span>
+        </div>
+        <div class="info-header">
+            <div class="perfis-badge" id="perfis_badge" title="Status da conexão com o painel web">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M14.5 9a3.5 3.5 0 00-5 0M9.5 15a3.5 3.5 0 005 0M12 6v2M12 16v2"/>
+                </svg>
+                <span id="perfis_count">OFF</span> Painel
+            </div>
+            <div class="perfis-badge tokens-badge" id="tokens_badge" title="Saldo de coins (moeda de uso da ferramenta)" style="display:none">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                    <circle cx="12" cy="12" r="9"/>
+                    <path d="M8 12l3 3 5-6"/>
+                </svg>
+                <span id="tokens_valor">0</span> <span id="tokens_unidade">coins</span>
+            </div>
+        </div>
+        <div class="funcoes">
+            <img src="images/minimizar.svg" id="btn_minimizar" title="Minimizar"/>
+            <img src="images/fechar.svg" id="btn_fechar" title="Fechar"/>
+        </div>
+    </div>
+
+    <!-- Container principal: layout em SIDEBAR -->
+    <div class="container">
+
+        <!-- ============ SIDEBAR: configurações + ações ============ -->
+        <aside class="sidebar">
+
+            <!-- Painel de Configurações -->
+            <div class="painel-config">
+                <div class="config-section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+                    </svg>
+                    Configurações
+                </div>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label>Motor de Browser</label>
+                        <select id="browser_engine">
+                            <option value="ixbrowser">IXBrowser</option>
+                            <option value="adspower">AdsPower</option>
+                        </select>
+                    </div>
+                    <div class="config-item">
+                        <label>Grupo / Pasta</label>
+                        <input type="text" id="nome_grupo" placeholder="Ex: Facebook Profiles" value="Facebook Profiles">
+                    </div>
+                    <div class="config-item">
+                        <label>Licença (Usuário)</label>
+                        <input type="text" id="config_usuario" readonly>
+                    </div>
+                    <div class="config-item adspower-field" id="adspower_token_container">
+                        <label>API KEY AdsPower <small style="opacity:0.6">(Automação → API → Gerar)</small></label>
+                        <input type="text" id="adspower_token" placeholder="Cole a API Key (AdsPower → Automação → API → Gerar)">
+                    </div>
+                    <div class="config-item adspower-field" id="adspower_url_container">
+                        <label>URL API AdsPower</label>
+                        <input type="text" id="adspower_url" placeholder="http://local.adspower.net:50325" value="http://local.adspower.net:50325">
+                    </div>
+                    <div class="config-item">
+                        <label>Proxy</label>
+                        <select id="proxy_select">
+                            <option value="nao">Sem Proxy</option>
+                            <option value="sim">Usar Proxy</option>
+                        </select>
+                    </div>
+                    <div class="config-item">
+                        <label>4G Ancoragem</label>
+                        <select id="utilizar_4g_select" onchange="atualizarTrocaIpUI(); if (typeof salvarConfiguracoesAtuais === 'function') salvarConfiguracoesAtuais();">
+                            <option value="nao">Desativado</option>
+                            <option value="sim">Ativado (USB)</option>
+                        </select>
+                        <div id="ip_4g_hint" style="display:none;margin-top:6px;font-size:12px;opacity:.85;line-height:1.4;">
+                            🔄 <b>Cota por IP</b>: troca para um IP <b>limpo</b> antes de iniciar e
+                            a cada <b>N perfis</b> por IP (abaixo), além do rate-limit da Meta. As abas
+                            pausam, o IP muda 1x (verificado, modo avião) e segue. IPs usados ficam
+                            <b>congelados</b> pela janela abaixo — não são reusados, mesmo fechando e
+                            reabrindo o bot. Com 4G desligado, a troca é manual.
+                        </div>
+                        <div id="ip_manual_hint" style="display:none;margin-top:6px;font-size:12px;opacity:.85;line-height:1.4;">
+                            🚫 <b>Troca de IP desativada.</b> Sem 4G (e sem proxy), o sistema
+                            <b>NÃO muda o IP</b> — apenas segue o fluxo. Você troca o IP
+                            <b>manualmente</b> (aparelho/roteador) ou usa uma <b>VPN que rotacione
+                            sozinha</b>. No rate-limit da Meta, o bot avisa e continua com número novo.
+                        </div>
+                    </div>
+                    <div class="config-item" id="ip_janela_item">
+                        <label>Janela do IP (congelar) <small style="opacity:0.6">(não reusar)</small></label>
+                        <select id="ip_janela_select" onchange="salvarConfiguracoesAtuais()" title="Tempo que um IP fica proibido de ser reusado (congelado). Persiste mesmo fechando o bot.">
+                            <option value="1">1 hora</option>
+                            <option value="3">3 horas</option>
+                            <option value="6" selected>6 horas</option>
+                            <option value="12">12 horas</option>
+                            <option value="24">24 horas</option>
+                        </select>
+                    </div>
+                    <div class="config-item" id="ip_max_item">
+                        <label>Máx. perfis por IP <small style="opacity:0.6">(cota)</small></label>
+                        <select id="ip_max_ip_select" onchange="salvarConfiguracoesAtuais()" title="Quantos perfis um mesmo IP atende antes de trocar para um IP limpo.">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="8">8</option>
+                            <option value="10" selected>10</option>
+                            <option value="12">12</option>
+                            <option value="15">15</option>
+                            <option value="20">20</option>
+                        </select>
+                    </div>
+                    <div class="config-item">
+                        <label>Qtd. BMs por Perfil</label>
+                        <select id="qtd_bm_select">
+                            <option value="1" selected>1 BM</option>
+                            <option value="2">2 BMs</option>
+                        </select>
+                    </div>
+                    <div class="config-item">
+                        <label>Navegadores Simultâneos <small style="opacity:0.6">(1–10)</small></label>
+                        <select id="simultaneos_select" title="Quantos navegadores rodam em paralelo, cada um independente">
+                            <option value="1" selected>1 (sequencial)</option>
+                            <option value="2">2 simultâneos</option>
+                            <option value="3">3 simultâneos</option>
+                            <option value="4">4 simultâneos</option>
+                            <option value="5">5 simultâneos</option>
+                            <option value="6">6 simultâneos</option>
+                            <option value="7">7 simultâneos</option>
+                            <option value="8">8 simultâneos</option>
+                            <option value="9">9 simultâneos</option>
+                            <option value="10">10 simultâneos</option>
+                            <!-- máximo atual = 10 (o motor usa no máx. 10). Liberar mais no futuro. -->
+                        </select>
+                    </div>
+                    <div class="config-item">
+                        <label>Modo de Exibição</label>
+                        <select id="oculto_select" title="Visível: organiza as janelas na tela. Oculto: roda em segundo plano (menos CPU/RAM)">
+                            <option value="nao" selected>👁️ Visível (janelas organizadas)</option>
+                            <option value="sim">🚫 Oculto (menos CPU/RAM)</option>
+                        </select>
+                    </div>
+                    <div class="config-item">
+                        <label>Fluxo de Verificação de BM</label>
+                        <!-- FLUXO ÚNICO (2026-10-05): só o Pro Max DataCrazy Turbo existe no sistema.
+                             Os demais métodos foram removidos (GUI + backend). -->
+                        <select id="verificar_bm_select">
+                            <option value="full_completo_datacrazy_meta" selected>⚡ 🟠 Pro Max DataCrazy Turbo — Meta direto, sem CRM (2,5 coins)</option>
+                        </select>
+                    </div>
+                    <div class="config-item verificacao-field" id="tipo_empresa_container" style="display: none;">
+                        <label>Tipo de Empresa</label>
+                        <select id="tipo_empresa_select">
+                            <option value="aleatorio">Aleatório (MEI ou LTDA)</option>
+                            <option value="mei">Apenas MEI</option>
+                            <option value="ltda">Apenas LTDA</option>
+                        </select>
+                    </div>
+                    <!-- Recurso da WABA desabilitada: enviar para análise COM texto de
+                         contestação (padrão) ou o formulário EM BRANCO (sem preencher nada). -->
+                    <div class="config-item verificacao-field" id="recurso_texto_container" style="display: none;">
+                        <label>Recurso da WABA <small style="opacity:0.6">(quando desabilita)</small></label>
+                        <select id="recurso_texto_select" title="Ao recorrer de uma WABA desabilitada: enviar com texto de contestação ou o formulário em branco">
+                            <option value="sim">Sim — enviar para análise COM texto de contestação (padrão)</option>
+                            <option value="nao">Não — enviar o formulário EM BRANCO (sem texto)</option>
+                        </select>
+                    </div>
+                    <!-- SMS agora é CENTRAL (serviço do painel, cobrado do saldo real).
+                         O bot compra o número pelo painel — sem tokens de provedor no cliente.
+                         Captcha (CapSolver) também é resolvido no servidor (chave do admin). -->
+                    <input type="hidden" id="sms24h_token" />
+                    <div class="config-item" id="metodo_verificacao_container" title="Como o domínio é verificado no Meta. Auto tenta meta-tag e, se a Meta não confirmar, cai para DNS TXT e depois arquivo HTML.">
+                        <label>Método de verificação do domínio</label>
+                        <select id="metodo_verificacao_select" onchange="try{localStorage.setItem('gsbm_metodo_verif', this.value)}catch(e){}">
+                            <option value="auto">Automático — meta-tag → DNS TXT → arquivo (recomendado)</option>
+                            <option value="metatag">Somente Meta-tag (HTML no &lt;head&gt;)</option>
+                            <option value="dns">Somente DNS TXT (Cloudflare)</option>
+                            <option value="arquivo">Somente Arquivo HTML (na raiz do site)</option>
+                        </select>
+                    </div>
+                    <div class="config-item proxy-container" id="proxy_tipo_container">
+                        <label>Tipo de Proxy</label>
+                        <select id="proxy_tipo">
+                            <option value="http">HTTP</option>
+                            <option value="socks5">SOCKS5</option>
+                        </select>
+                    </div>
+                    <div class="config-item proxy-container config-row-full" id="lista_proxy_container">
+                        <div class="proxy-label-row">
+                            <label>Lista de Proxy</label>
+                            <button class="btn btn-proxy-importar" id="btn_importar_proxy" title="Importar proxies de arquivo .txt">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+                                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                                    <polyline points="14 2 14 8 20 8"/>
+                                </svg>
+                                Importar .TXT
+                            </button>
+                            <input type="file" id="input_proxy_arquivo" accept=".txt" style="display:none;">
+                        </div>
+                        <span class="proxy-formato-hint">Formato: IP:Porta:Usuário:Senha (1 proxy por linha)</span>
+                        <textarea id="lista_proxy" placeholder="92.112.170.132:6101:usuario:senha123&#10;91.123.10.239:6781:usuario:senha123&#10;45.38.89.73:6008:usuario:senha123"></textarea>
+                        <span class="proxy-contagem" id="proxy_contagem"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Barra de Ações (vertical na sidebar) -->
+            <div class="barra-acoes">
+                <div class="lado-esquerdo">
+                    <button class="btn btn-accent" id="btn_importar" title="Importar perfis de arquivo .txt do painel">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                        Importar .TXT
+                    </button>
+                    <input type="file" id="input_arquivo" accept=".txt">
+
+                    <button class="btn btn-primary" id="btn_importar_comprados" title="Importar perfis já comprados no painel">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 3h2l.4 2M7 13h10l4-8H5.4"/>
+                            <circle cx="9" cy="20" r="1.5"/>
+                            <circle cx="18" cy="20" r="1.5"/>
+                        </svg>
+                        Importar Comprados
+                    </button>
+
+                    <button class="btn btn-primary" id="btn_reutilizar_logados" title="Reutilizar perfis JÁ LOGADOS no AdsPower/IxBrowser: abre cada perfil do grupo e cria 1 BM NOVA, enviando p/ análise (mesmo perfis que já têm BM)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 4 23 10 17 10"/>
+                            <polyline points="1 20 1 14 7 14"/>
+                            <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+                        </svg>
+                        Reutilizar Logados
+                    </button>
+
+                    <button class="btn btn-fila-toggle" id="btn_toggle_fila" title="Abrir fila de verificação de BMs" style="display:none;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                        Fila
+                        <span class="fila-toggle-badge" id="fila_toggle_badge" style="display:none;">0</span>
+                    </button>
+
+                    <div class="contadores" id="contadores">
+                        <span><span class="dot dot-total"></span> Total: <strong id="cnt_total">0</strong></span>
+                        <span><span class="dot dot-ok"></span> OK: <strong id="cnt_ok">0</strong></span>
+                        <span><span class="dot dot-erro"></span> Erros: <strong id="cnt_erro">0</strong></span>
+                    </div>
+                </div>
+                <div class="lado-direito">
+                    <span class="status-badge desconectado" id="status_ix">
+                        <span class="status-dot-badge"></span>
+                        <span id="status_ix_text">Browser: --</span>
+                    </span>
+                    <button class="btn btn-success btn-iniciar-grande" id="btn_iniciar" disabled>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="5 3 19 12 5 21 5 3"/>
+                        </svg>
+                        Iniciar
+                    </button>
+                    <button class="btn btn-danger" id="btn_cancelar" style="display:none;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        </svg>
+                        Cancelar
+                    </button>
+                    <button class="btn btn-o" id="btn_pausar" style="display:none;margin-top:6px;">
+                        ⏸️ Pausar
+                    </button>
+                    <button class="btn btn-success" id="btn_continuar" style="display:none;margin-top:6px;">
+                        ▶️ Continuar
+                    </button>
+                    <!-- ===== Exportar falhas (.txt) — reimportar depois p/ retomar ===== -->
+                    <div class="export-panel">
+                        <div class="export-panel__title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Exportar Falhas
+                        </div>
+                        <button class="export-card export-card--block" id="btn_export_login"
+                                title="Exporta as contas que NÃO logaram no Facebook (bloqueio / checkpoint / precisa código no e-mail)">
+                            <span class="export-card__glyph">🔒</span>
+                            <span class="export-card__body">
+                                <span class="export-card__title">Bloqueios / Login</span>
+                                <span class="export-card__sub">Não logaram no Facebook</span>
+                            </span>
+                            <svg class="export-card__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                            </svg>
+                        </button>
+                        <button class="export-card export-card--warn" id="btn_export_fluxo"
+                                title="Exporta os perfis que logaram mas a BM ficou incompleta (não enviada p/ análise) — reimporte p/ retomar">
+                            <span class="export-card__glyph">📋</span>
+                            <span class="export-card__body">
+                                <span class="export-card__title">BM Incompleta</span>
+                                <span class="export-card__sub">Logou, mas não foi p/ análise</span>
+                            </span>
+                            <svg class="export-card__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ============ MAIN: dashboard + terminal + tabela ============ -->
+        <main class="main-col">
+
+            <!-- HERO: cards de estatística + barra dupla (sempre visíveis) -->
+            <div class="hero-stats" id="hero_stats">
+                <div class="exec-cards">
+                    <div class="exec-card card-ok" title="BMs criadas/concluídas com sucesso">
+                        <div class="exec-card-ico">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        </div>
+                        <div class="exec-card-info">
+                            <span class="exec-card-num" id="card_ok_num">0</span>
+                            <span class="exec-card-lbl">Concluídas</span>
+                        </div>
+                    </div>
+                    <div class="exec-card card-erro" title="Falharam na criação/verificação e encerraram">
+                        <div class="exec-card-ico">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                        </div>
+                        <div class="exec-card-info">
+                            <span class="exec-card-num" id="card_erro_num">0</span>
+                            <span class="exec-card-lbl">Erros / Falhas</span>
+                        </div>
+                    </div>
+                    <div class="exec-card card-recorrida" title="WABA desabilitada + recurso ENVIADO (aguardando reanálise da Meta) — não é erro">
+                        <div class="exec-card-ico">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+                        </div>
+                        <div class="exec-card-info">
+                            <span class="exec-card-num" id="card_recorrida_num">0</span>
+                            <span class="exec-card-lbl">Recorridas</span>
+                        </div>
+                    </div>
+                    <div class="exec-card card-proc" title="Em processamento agora (tempo real)">
+                        <div class="exec-card-ico">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg>
+                        </div>
+                        <div class="exec-card-info">
+                            <span class="exec-card-num" id="card_proc_num">0</span>
+                            <span class="exec-card-lbl">Processando</span>
+                        </div>
+                    </div>
+                    <div class="exec-card card-aguard" title="Aguardando na fila para iniciar">
+                        <div class="exec-card-ico">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                        <div class="exec-card-info">
+                            <span class="exec-card-num" id="card_aguard_num">0</span>
+                            <span class="exec-card-lbl">Aguardando</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="exec-bars">
+                    <div class="exec-bar-row">
+                        <span class="exec-bar-label">Sucesso</span>
+                        <div class="exec-bar-track"><div class="exec-bar-fill bar-ok" id="bar_ok"></div></div>
+                        <span class="exec-bar-pct" id="bar_ok_pct">0%</span>
+                    </div>
+                    <div class="exec-bar-row">
+                        <span class="exec-bar-label">Erros</span>
+                        <div class="exec-bar-track"><div class="exec-bar-fill bar-erro" id="bar_erro"></div></div>
+                        <span class="exec-bar-pct" id="bar_erro_pct">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card: Fila de Verificação de BMs -->
+            <div class="fila-verificacao-card" id="fila_verificacao_card" style="display:none;">
+                <div class="fila-header">
+                    <div class="fila-titulo">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                        <span>Fila de Verificação</span>
+                    </div>
+                    <div class="fila-badges">
+                        <span class="fila-badge fila-badge-aguardando" id="fila_aguardando" title="Aguardando 2h mínimas">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                            <span id="fila_aguardando_num">0</span> aguardando
+                        </span>
+                        <span class="fila-badge fila-badge-prontas" id="fila_prontas" title="Prontas para verificar (2h+ de espera)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            <span id="fila_prontas_num">0</span> prontas
+                        </span>
+                        <span class="fila-badge fila-badge-verificadas" id="fila_verificadas">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+                                <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                            <span id="fila_verificadas_num">0</span> verificadas
+                        </span>
+                        <span class="fila-badge fila-badge-erros" id="fila_erros" style="display:none;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="15" y1="9" x2="9" y2="15"/>
+                                <line x1="9" y1="9" x2="15" y2="15"/>
+                            </svg>
+                            <span id="fila_erros_num">0</span> erros
+                        </span>
+                    </div>
+                </div>
+                <div class="fila-info" id="fila_info">
+                    <span id="fila_proxima_msg"></span>
+                </div>
+                <div class="fila-progresso-container" id="fila_progresso_container" style="display:none;">
+                    <div class="fila-progresso-barra">
+                        <div class="fila-progresso-fill" id="fila_progresso_fill"></div>
+                    </div>
+                    <span class="fila-progresso-texto" id="fila_progresso_texto"></span>
+                </div>
+                <div class="fila-acoes">
+                    <!-- Auto-verificar REMOVIDO (2026-10-13): abria navegador sozinho com o app ocioso. -->
+                    <label class="checkbox-container" id="auto_verificar_label" title="O software verifica automaticamente quando as BMs atingirem 2h na fila" style="display:none;">
+                        <input type="checkbox" id="auto_verificar_check">
+                        <span class="checkmark"></span>
+                        Auto-verificar quando pronta
+                    </label>
+                    <button class="btn btn-fila-verificar" id="btn_verificar_fila" disabled title="Verificar BMs que já esperaram 2+ horas">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        Verificar Prontas
+                    </button>
+                    <button class="btn btn-fila-cancelar" id="btn_cancelar_verificacao" style="display:none;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        </svg>
+                        Cancelar
+                    </button>
+                    <button class="btn btn-fila-limpar" id="btn_limpar_fila" title="Remover BMs já verificadas da fila">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                            <polyline points="3 6 5 6 21 6"/>
+                            <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                        </svg>
+                        Limpar
+                    </button>
+                    <button class="btn btn-fila-retentar" id="btn_retentar_fila" style="display:none;" title="Mover BMs com erro de volta para a fila de espera">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                            <polyline points="23 4 23 10 17 10"/>
+                            <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
+                        </svg>
+                        Retentar Erros
+                    </button>
+                </div>
+            </div>
+
+            <!-- Painel de Execução (workers + terminal ao vivo) -->
+            <div class="painel-execucao" id="painel_execucao" style="display:none;">
+                <div class="exec-workers" id="exec_workers"></div>
+                <div class="exec-terminal">
+                    <div class="exec-terminal-head">
+                        <span class="term-dot td-r"></span><span class="term-dot td-y"></span><span class="term-dot td-g"></span>
+                        <span class="exec-terminal-title">TERMINAL AO VIVO</span>
+                        <span class="exec-terminal-sub" id="exec_terminal_sub"></span>
+                    </div>
+                    <div class="exec-terminal-body" id="exec_terminal_body"></div>
+                </div>
+            </div>
+
+            <!-- Tabela de Perfis -->
+            <div class="tabela-container" id="tabela_container">
+                <div class="tabela-vazia" id="estado_vazio">
+                    <div class="empty-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </div>
+                    <p>Nenhum perfil importado</p>
+                    <span class="hint">Clique em <strong>"Importar .TXT"</strong> para carregar perfis de um arquivo</span>
+                </div>
+
+                <table class="tabela-perfis" id="tabela_perfis" style="display:none;">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Login</th>
+                            <th>Email</th>
+                            <th>Senha Email</th>
+                            <th>2FA</th>
+                            <th>Cookie</th>
+                            <th>Token</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela_body">
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Rodapé -->
+    <div class="rodape">
+        <span class="info" id="rodape_info">{{MARCA}} v5.0</span>
+        <div class="barra-progresso-container" id="barra_progresso_container">
+            <div class="barra-progresso" id="barra_progresso"></div>
+        </div>
+    </div>
+
+    <!-- Modal: Importar Perfis Comprados -->
+    <div class="modal-overlay" id="modal_comprados" style="display:none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <span>Importar Perfis Comprados</span>
+                <button class="modal-close" id="btn_fechar_modal_comprados" title="Fechar">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-info" id="modal_comprados_info">
+                    Carregando compras...
+                </div>
+                <div class="modal-lista" id="modal_comprados_lista">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span class="modal-resumo" id="modal_comprados_resumo">0 perfil(is) selecionado(s)</span>
+                <button class="btn btn-secondary" id="btn_recarregar_comprados">Recarregar</button>
+                <button class="btn btn-success" id="btn_confirmar_importar_comprados" disabled>Importar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Reutilizar Perfis Logados (cria BM nova em cada perfil do grupo) -->
+    <div class="modal-overlay" id="modal_reutilizar" style="display:none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <span>♻️ Reutilizar Perfis Logados — criar BM nova</span>
+                <button class="modal-close" id="btn_fechar_modal_reutilizar" title="Fechar">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-info">
+                    Abre CADA perfil já logado no <b id="reutilizar_engine_nome">navegador</b> do grupo escolhido
+                    e cria <b>1 BM NOVA</b> + empresa/site novos, enviando p/ análise pelo fluxo
+                    Pro Max DataCrazy Turbo. A BM nova já entra <b>selecionada no fluxo</b>. Vale mesmo p/ perfis que
+                    já têm BM criada (ativa ou não usada) — sempre há espaço p/ mais uma.
+                    <br><br><b>Consome 1 empresa + SMS por perfil.</b>
+                </div>
+                <div class="sms-campo" style="margin-top:14px;">
+                    <label>📂 Grupo / Pasta dos perfis</label>
+                    <select id="reproc_grupo"><option value="">Todos os perfis</option></select>
+                </div>
+                <input type="hidden" id="reproc_forcar_nova" value="1">
+            </div>
+            <div class="modal-footer">
+                <span class="modal-resumo" id="reutilizar_resumo"></span>
+                <button class="btn btn-secondary" id="btn_recarregar_grupos_reutilizar">Recarregar grupos</button>
+                <button class="btn btn-success" id="btn_iniciar_reutilizar">Iniciar — criar BM nova</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- (Removido) Modal "Provedores de SMS": o SMS virou serviço CENTRAL do painel,
+         cobrado do saldo real do usuário. Sem tokens de provedor no cliente. -->
+
+    <!-- Scripts -->
+    <script src="./js/app.js"></script>
+</body>
+</html>

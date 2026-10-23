@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token Cloudflare — permissões obrigatórias (Painel GranaSocial)</title>
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#fff; --ink:#16181d; --muted:#5b6472; --line:#e3e7ee;
+    --accent:#f6821f; --accent-soft:#fff4e8;
+    --ok:#0f7b3f; --ok-soft:#e7f6ec; --bad:#b3261e; --bad-soft:#fdeceb;
+    --code-bg:#12141a; --code-ink:#e8eaf0;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0f1116; --card:#171a21; --ink:#e8eaf0; --muted:#9aa4b4; --line:#272c36;
+      --accent:#ffa04d; --accent-soft:#2a1f13;
+      --ok:#5fd08a; --ok-soft:#13291d; --bad:#ff8a80; --bad-soft:#2c1615;
+      --code-bg:#0a0c10; --code-ink:#e8eaf0;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0f1116; --card:#171a21; --ink:#e8eaf0; --muted:#9aa4b4; --line:#272c36;
+    --accent:#ffa04d; --accent-soft:#2a1f13;
+    --ok:#5fd08a; --ok-soft:#13291d; --bad:#ff8a80; --bad-soft:#2c1615;
+    --code-bg:#0a0c10; --code-ink:#e8eaf0;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; padding:28px 18px 72px;
+    background:var(--bg); color:var(--ink);
+    font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  .wrap{max-width:900px;margin:0 auto}
+  header{margin-bottom:26px}
+  .eyebrow{
+    display:inline-block; font-size:12px; font-weight:700; letter-spacing:.09em;
+    text-transform:uppercase; color:var(--accent);
+    background:var(--accent-soft); border:1px solid var(--accent);
+    padding:4px 10px; border-radius:99px;
+  }
+  h1{font-size:clamp(24px,4.2vw,34px); line-height:1.2; margin:14px 0 8px; letter-spacing:-.02em}
+  .sub{color:var(--muted); margin:0; max-width:62ch}
+  section{
+    background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:20px 22px; margin:20px 0;
+  }
+  h2{font-size:19px; margin:0 0 4px; letter-spacing:-.01em}
+  h2 .n{
+    display:inline-grid; place-items:center; width:26px; height:26px; margin-right:9px;
+    border-radius:8px; background:var(--accent); color:#fff; font-size:14px; font-weight:700;
+    vertical-align:2px;
+  }
+  :root[data-theme="dark"] h2 .n, :root:not([data-theme="light"]) h2 .n{color:#12141a}
+  @media (prefers-color-scheme: light){ :root:not([data-theme="dark"]) h2 .n{color:#fff} }
+  h2 + p{margin-top:6px; color:var(--muted)}
+  .tablewrap{overflow-x:auto; -webkit-overflow-scrolling:touch; margin:14px -4px 0; padding:0 4px}
+  table{width:100%; min-width:620px; border-collapse:collapse; font-size:14.5px}
+  th,td{text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top}
+  th{font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:700}
+  tr:last-child td{border-bottom:0}
+  td.grp{white-space:nowrap; font-weight:600}
+  .pill{
+    display:inline-block; padding:2px 8px; border-radius:6px; font-size:12.5px;
+    font-weight:700; letter-spacing:.02em; border:1px solid transparent;
+  }
+  .pill.acc{background:var(--accent-soft); color:var(--accent); border-color:var(--accent)}
+  .pill.zon{background:transparent; color:var(--muted); border-color:var(--line)}
+  tr.key td{background:var(--accent-soft)}
+  tr.key td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+  code,kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em}
+  code{background:var(--bg); border:1px solid var(--line); border-radius:5px; padding:1px 5px}
+  pre{
+    background:var(--code-bg); color:var(--code-ink); border-radius:10px;
+    padding:14px 16px; overflow-x:auto; font-size:13.5px; line-height:1.55; margin:12px 0 0;
+  }
+  pre code{background:none;border:0;padding:0;color:inherit}
+  .box{border-radius:10px; padding:14px 16px; margin:14px 0 0; border:1px solid}
+  .box.warn{background:var(--bad-soft); border-color:var(--bad)}
+  .box.good{background:var(--ok-soft); border-color:var(--ok)}
+  .box h3{margin:0 0 6px; font-size:15px}
+  .box.warn h3{color:var(--bad)} .box.good h3{color:var(--ok)}
+  .box p:last-child{margin-bottom:0}
+  ul.res{list-style:none; padding:0; margin:14px 0 0}
+  ul.res li{
+    border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin-bottom:10px;
+    display:flex; gap:12px; flex-wrap:wrap; align-items:baseline;
+  }
+  ul.res li b{min-width:180px}
+  .yes{color:var(--ok); font-weight:700}
+  .no{color:var(--bad); font-weight:700}
+  .chk{list-style:none; padding:0; margin:14px 0 0}
+  .chk li{padding:9px 0 9px 34px; position:relative; border-bottom:1px dashed var(--line)}
+  .chk li:last-child{border-bottom:0}
+  .chk li::before{
+    content:""; position:absolute; left:0; top:12px; width:19px; height:19px;
+    border:2px solid var(--muted); border-radius:5px;
+  }
+  footer{color:var(--muted); font-size:13px; text-align:center; margin-top:34px}
+  @media print{
+    body{background:#fff; padding:0} section{break-inside:avoid; border-color:#ccc}
+    pre{background:#f2f2f2; color:#000}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <span class="eyebrow">Painel GranaSocial · Rodízio Cloudflare</span>
+  <h1>Permissões obrigatórias do token Cloudflare</h1>
+  <p class="sub">Checklist para <b>cada conta Cloudflare nova</b> que entra no rodízio de domínios.
+  Sem o item&nbsp;1 desta lista o painel não consegue criar zona e o estoque de domínios trava por inteiro.</p>
+</header>
+
+<div class="box warn">
+  <h3>⚠️ A armadilha: existem DUAS permissões chamadas “Zone”</h3>
+  <p>No formulário da Cloudflare aparece <b>Zone</b> dentro do grupo <b>Account</b> e <b>Zone</b> dentro do grupo <b>Zone</b>.
+  Elas são coisas diferentes:</p>
+  <p style="margin-top:8px">
+    • <span class="pill acc">Account</span> → <b>Zone</b> → <b>Edit</b> = <span class="yes">CRIA zonas novas</span> — é essa que sempre esquecem.<br>
+    • <span class="pill zon">Zone</span> → <b>Zone</b> → <b>Edit</b> = <span class="no">só mexe em zonas que já existem</span> — não cria nada.
+  </p>
+  <p style="margin-top:8px">Se faltar a de <b>Account</b>, o painel devolve:
+  <code>Requires permission "com.cloudflare.api.account.zone.create" to create zones for the selected account</code></p>
+</div>
+
+<div class="box good">
+  <h3>“Não acho Zone na lista do Account”</h3>
+  <p>Ela existe — só está <b>escondida no fim da lista</b>. A lista é alfabética e <b>Zone</b> é o
+  <b>último item de todos</b>, depois de <i>Zero Trust</i>, <i>Zero Trust Resilience</i>, <i>Zero Trust: PII</i>
+  e <i>Zero Trust: Seats</i>. Quem para de rolar no “Zero Trust: Seats” acha que acabou.</p>
+  <p style="margin-top:8px"><b>Atalho:</b> deixe <code>Account</code> selecionado na primeira coluna, clique no campo
+  <code>Select</code> do meio e <b>digite <kbd>zone</kbd></b> — o campo é de busca e filtra na hora.
+  Escolha <b>Zone</b> e ponha o nível <b>Edit</b>.</p>
+</div>
+
+<section>
+  <h2><span class="n">1</span>As 7 permissões do token</h2>
+  <p>Crie em <b>My Profile → API Tokens → Create Token → Create Custom Token</b>.
+  Nenhum template pronto serve (inclusive “Edit zone DNS”) — nenhum deles inclui a linha destacada.</p>
+
+  <div class="tablewrap">
+  <table>
+    <thead>
+      <tr><th>#</th><th>Grupo</th><th>Permissão</th><th>Nível</th><th>Para que o painel usa</th></tr>
+    </thead>
+    <tbody>
+      <tr class="key">
+        <td><b>1</b></td>
+        <td class="grp"><span class="pill acc">Account</span></td>
+        <td><b>Zone</b></td>
+        <td><b>Edit</b></td>
+        <td><b>Criar a zona do domínio</b> (<code>POST /zones</code>). <b>É a que costuma faltar.</b></td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td class="grp"><span class="pill acc">Account</span></td>
+        <td>Account Settings</td>
+        <td>Read</td>
+        <td>Listar a conta e casar o <code>account_id</code> (<code>GET /accounts</code>)</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td class="grp"><span class="pill acc">Account</span></td>
+        <td>Cloudflare Pages</td>
+        <td>Edit</td>
+        <td>Criar / listar / apagar projeto e disparar deploy</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td class="grp"><span class="pill zon">Zone</span></td>
+        <td>Zone</td>
+        <td>Edit</td>
+        <td><code>activation_check</code> — acelera o status <i>propagando</i></td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td class="grp"><span class="pill zon">Zone</span></td>
+        <td>Zone</td>
+        <td>Read</td>
+        <td>Ler <code>zone_id</code> e o status da zona</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td class="grp"><span class="pill zon">Zone</span></td>
+        <td>Zone Settings</td>
+        <td>Edit</td>
+        <td>SSL <b>Full</b> + <b>Always Use HTTPS</b></td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td class="grp"><span class="pill zon">Zone</span></td>
+        <td>DNS</td>
+        <td>Edit</td>
+        <td>Wildcard <code>*.dominio</code> A, apex A, <b>MX</b> do e-mail e <b>TXT</b> de verificação do Meta</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">2</span>Escopo (Resources) — tão importante quanto as permissões</h2>
+  <ul class="res">
+    <li><b>Account Resources</b><span><b>Include</b> → a conta (ex.: <i>Fulano@uorak.com's Account</i>)</span></li>
+    <li><b>Zone Resources</b><span><b>Include</b> → <b>All zones from an account</b> → a mesma conta</span></li>
+    <li><b>Client IP Address Filtering</b><span>deixar <b>vazio</b></span></li>
+    <li><b>TTL</b><span><b>sem data de expiração</b></span></li>
+  </ul>
+  <div class="box warn" style="margin-top:14px">
+    <h3>Não escolha “Specific zone”</h3>
+    <p>Zona criada depois do token nasce <b>fora</b> do escopo — o painel cria a zona e em seguida
+    não consegue mais tocar no DNS dela. Tem que ser <b>All zones from an account</b>.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">3</span>Checklist antes de salvar o token</h2>
+  <ul class="chk">
+    <li>Marquei <b>Account → Zone → Edit</b> (a linha destacada)</li>
+    <li>Marquei <b>Account → Account Settings → Read</b></li>
+    <li>Marquei <b>Account → Cloudflare Pages → Edit</b></li>
+    <li>Marquei <b>Zone → Zone → Edit</b> e <b>Zone → Zone → Read</b></li>
+    <li>Marquei <b>Zone → Zone Settings → Edit</b></li>
+    <li>Marquei <b>Zone → DNS → Edit</b></li>
+    <li>Zone Resources = <b>All zones from an account</b> (não “Specific zone”)</li>
+    <li>Sem filtro de IP e sem TTL</li>
+    <li>Colei o token no painel em <b>admin → Cloudflare Dev</b> junto com o <b>Account ID</b> (32 caracteres)</li>
+  </ul>
+  <div class="box good">
+    <h3>Editou um token que já existia?</h3>
+    <p>O valor do token <b>não muda</b> ao editar permissões — não precisa recadastrar nada no painel.
+    Já se você criar um token <b>novo</b>, tem que atualizar o valor em <b>admin → Cloudflare Dev</b>.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">4</span>Conferir se o token ficou certo</h2>
+  <p>Sonda de leitura já instalada na VPS. Ela testa <b>todas</b> as contas cadastradas e diz OK/FALTA por permissão:</p>
+  <pre><code>ssh root@2.25.147.134
+php /root/gs_token_probe.php</code></pre>
+  <p style="margin-top:12px">Como ela testa a criação de zona: manda um nome inválido de propósito
+  (<code>probe--invalid--.invalidtld</code>) e lê o erro que volta.</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Resposta da Cloudflare</th><th>Significado</th></tr></thead>
+    <tbody>
+      <tr><td><code>1099</code> / <code>1049</code> — “unable to identify … as a registered domain”</td><td><span class="yes">Permissão de criar zona OK</span> (recusou o nome, não a permissão)</td></tr>
+      <tr><td><code>Requires permission "com.cloudflare.api.account.zone.create"</code></td><td><span class="no">Falta Account → Zone → Edit</span></td></tr>
+      <tr><td><code>1118</code> — “You have exceeded the limit for adding zones”</td><td>Permissão OK, mas a <b>conta está cheia</b> de zonas pendentes → o painel marca <code>zone_limit_reached=1</code> e passa para a próxima conta</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="box warn">
+    <h3>Pegadinha do diagnóstico</h3>
+    <p><code>GET /accounts</code> responder <code>success: true</code> com a <b>lista vazia</b> não quer dizer que está tudo certo —
+    é token sem <b>Account Settings → Read</b>. E o contrário também acontece: token que lista a conta direitinho e mesmo assim
+    <b>não cria zona</b>. As duas permissões são independentes; teste sempre as duas.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">5</span>Por que isso trava o painel inteiro</h2>
+  <p>A rotina <code>domAbastecerPasso()</code> trata os domínios em <code>estoque_status='comprando'</code>
+  no <b>passo 0 e retorna ali mesmo</b>. Ou seja: <b>um único</b> domínio preso em “comprando” faz o cron de 2 minutos
+  nunca chegar nos passos seguintes.</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Estado</th><th>O que significa</th><th>O que fica parado junto</th></tr></thead>
+    <tbody>
+      <tr><td><code>comprando</code></td><td>Domínio pago, <b>sem zona</b> na Cloudflare</td><td>— (é aqui que trava)</td></tr>
+      <tr><td><code>propagando</code></td><td>Zona criada, esperando NS / SSL / MX</td><td>Nenhum domínio avança para <code>ativo</code></td></tr>
+      <tr><td><code>ativo</code></td><td>Site + certificado + e-mail prontos</td><td>Estoque não repõe: nenhuma compra nova</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p style="margin-top:14px">Assim que um token do rodízio ganhar a permissão de criar zona, o cron destrava sozinho
+  e processa a fila inteira. Para forçar na hora, adotando um domínio comprado fora do painel:</p>
+  <pre><code>php /root/gs_adotar.php meudominio.net namecheap</code></pre>
+  <p style="margin-top:12px">O script cria a zona, aponta os NS no registrador, coloca em <code>propagando</code>
+  e dispara o <code>activation_check</code>. Os 4 portões seguintes (zona <i>active</i> → NS delegados →
+  wildcard + SSL → MX) o cron fecha sozinho.</p>
+</section>
+
+<footer>
+  Documento interno · Painel GranaSocial · atualizado em 08/08/2026<br>
+  Nenhum token ou senha está neste arquivo — pode ficar salvo no site.
+</footer>
+
+</div>
+</body>
+</html>

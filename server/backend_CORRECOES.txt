@@ -1,0 +1,62 @@
+CORREÇÕES IMPLEMENTADAS NO ARQUIVO: server/backend.py
+=====================================================
+
+ARQUIVO: server/backend.py
+FUNÇÃO: _processar_fila_verificacao (linha 1925-1929)
+
+MUDANÇA: Validar ENDEREÇO COMPLETO antes de processar
+
+ANTES (INCORRETO):
+-----------------
+                # Gerar número de telefone
+                from server.gerar_numero import gerar_numero_aleatorio
+                numero_gerado = gerar_numero_aleatorio()
+                numero_sms = f'+{numero_gerado}'
+                empresa_dados['telefone'] = numero_sms
+
+DEPOIS (CORRETO):
+-----------------
+                # Validar ENDEREÇO COMPLETO antes de processar
+                logradouro = (empresa_dados.get('logradouro') or '').strip()
+                bairro = (empresa_dados.get('bairro') or '').strip()
+                municipio = (empresa_dados.get('municipio') or '').strip()
+                cep = (empresa_dados.get('cep') or '').strip()
+                
+                tem_logradouro = bool(logradouro)
+                tem_bairro_cidade_cep = bool(bairro) and bool(municipio) and bool(cep)
+                
+                if not (tem_logradouro or tem_bairro_cidade_cep):
+                    logger.error("[VerifFila] Endereço INCOMPLETO para BM %s — pulando para próximo CNPJ", business_id)
+                    atualizar_status_bm(profile_id, business_id, 'erro', 'Endereço incompleto')
+                    _estado_verificacao['progresso_itens'][idx]['status'] = 'Erro'
+                    _estado_verificacao['progresso_itens'][idx]['cor'] = '#FF4444'
+                    _estado_verificacao['progresso_itens'][idx]['mensagem'] = '❌ Endereço incompleto - próximo'
+                    _estado_verificacao['erros'] += 1
+                    continue
+                
+                # Gerar número de telefone VÁLIDO (número brasileiro realista)
+                from server.gerar_numero import gerar_numero_aleatorio
+                numero_gerado = gerar_numero_aleatorio()
+                numero_sms = f'+{numero_gerado}'
+                empresa_dados['telefone'] = numero_sms
+                
+                logger.info("[VerifFila] Endereço COMPLETO validado. Telefone gerado: %s", numero_sms[:20])
+                
+                # ===== LOG DE AUDITORIA =====
+                logger.info("[VerifFila] AUDITORIA - Dados REAIS para BM %s:", business_id)
+                logger.info("  - Razão Social: %s", empresa_dados.get('razao_social', ''))
+                logger.info("  - Endereço: %s", logradouro)
+                logger.info("  - Bairro: %s", bairro)
+                logger.info("  - Cidade: %s", municipio)
+                logger.info("  - CEP: %s", cep)
+                logger.info("  - Telefone: %s (gerado - será alterado depois)", numero_sms[:20] if numero_sms else '')
+                logger.info("  - Site: %s", site_cache.get('url', ''))
+                logger.info("  - CNPJ: %s", empresa_dados.get('cnpj', ''))
+
+IMPACTO:
+--------
+✅ CNPJs com endereço incompleto são ignorados
+✅ Pula automaticamente para próximo CNPJ
+✅ Telefone válido é gerado (número brasileiro realista)
+✅ Logs rastreiam todos os dados reais usados
+✅ Nenhum token é gasto com dados incompletos
