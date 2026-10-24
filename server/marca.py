@@ -27,7 +27,7 @@ EDICAO       = 'Enterprise Shield Edition'
 # ---- enderecos da infra -----------------------------------------------------
 DOMINIO      = 'farm.mragencia.com'
 URL_API      = 'https://farm.mragencia.com/api/software_api.php'
-URL_MAIL     = 'https://mail.farm.mragencia.com'
+URL_MAIL     = 'https://mail.mragencia.com'
 URL_CDN      = 'https://farm.mragencia.com/updates'
 URL_MANIFESTO = URL_CDN + '/latest.json'
 

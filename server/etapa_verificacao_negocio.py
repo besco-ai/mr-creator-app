@@ -6814,7 +6814,7 @@ def executar_etapa_verificacao_negocio(driver, empresa_dados, business_id, site_
                     _rc_site = atualizar_contato_site(
                         site_id, telefone=nacional, email=(bm_email or ''),
                         senha_email=_senha_apex,
-                        email_servidor=('https://mail.farm.mragencia.com' if _senha_apex else ''))
+                        email_servidor=('https://mail.mragencia.com' if _senha_apex else ''))
                     if _rc_site.get('sucesso'):
                         status("✅ Site coerente com a BM/certificado (contato atualizado).")
                     else:
